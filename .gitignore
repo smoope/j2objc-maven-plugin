@@ -1,0 +1,23 @@
+.project
+.idea/
+.metadata
+target
+test-output
+test-output/**
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# PDT-specific
+.buildpath
+*.iml
