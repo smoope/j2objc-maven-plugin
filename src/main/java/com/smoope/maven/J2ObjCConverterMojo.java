@@ -59,6 +59,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     @Parameter(required = true)
     private String j2objcPath;
 
+    @Parameter
+    private List<Dependency> dependencies;
+
     @Parameter(defaultValue = "${project.build.directory}/j2objc")
     private String d;
 
@@ -146,34 +149,49 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     @Parameter(defaultValue = "objective-c")
     private String x;
 
-//    @Parameter(defaultValue = "false")
-//    private Boolean includeDependencies;
-
-    private Collection<Artifact> dependencies;
-
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            resolveDependencies();
-
-            executeCommand(buildCommand(getSourceFiles(), ""));
-//            if (includeDependencies) {
-//                for (Artifact dependency: dependencies) {
-//                    File dependencyFile = dependency.getFile();
-//                    if (dependencyFile.isFile() && !dependencyFile.getName().startsWith(mavenProject.getArtifactId())) {
-//                        File sourcesFile = new File(dependencyFile.getAbsolutePath().replace(".jar", "-sources.jar"));
-//                        if (sourcesFile.exists()) {
-//                            String path = extractJar(dependency.getArtifactId(), sourcesFile);
-//                            executeCommand(buildCommand(Arrays.asList(FileUtils.getFilesFromExtension(path, new String[]{"java"})), dependency.getArtifactId()));
-//                        }
-//                    }
-//                }
-//            }
+            executeCommand(
+                    buildCommand(
+                            sourcePath,
+                            resolveDependencies(new DefaultArtifact(
+                                    mavenProject.getGroupId(),
+                                    mavenProject.getArtifactId(),
+                                    "",
+                                    mavenProject.getPackaging(),
+                                    mavenProject.getVersion()
+                            )),
+                            getSourceFiles(),
+                            ""
+                    )
+            );
+            if (dependencies != null && !dependencies.isEmpty()) {
+                for (Dependency dependency: dependencies) {
+                    Artifact artifact = new DefaultArtifact(
+                            dependency.getGroupId(),
+                            dependency.getArtifactId(),
+                            "sources",
+                            "jar",
+                            dependency.getVersion()
+                    );
+                    String path = extractJar(dependency.getArtifactId(),
+                            new File(session.getLocalRepository().getBasedir(), session.getLocalRepositoryManager().getPathForLocalArtifact(artifact))
+                    );
+                    executeCommand(
+                            buildCommand(
+                                    path,
+                                    resolveDependencies(artifact),
+                                    Arrays.asList(FileUtils.getFilesFromExtension(path, new String[]{"java"})),
+                                    dependency.getArtifactId()
+                            )
+                    );
+                }
+            }
         } catch (DependencyResolutionException e) {
             getLog().error(e);
+        } catch (IOException e) {
+            getLog().error(e);
         }
-//        } catch (IOException e) {
-//            getLog().error(e);
-//        }
     }
 
     private void executeCommand(final String command) {
@@ -210,7 +228,8 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         return Arrays.asList(list);
     }
 
-    private String buildCommand(final List<String> file, final String output) throws DependencyResolutionException {
+    private String buildCommand(final String sourcePath, final Collection<Artifact> classPathDependencies,
+                                final List<String> file, final String output) throws DependencyResolutionException {
         List<String> result = new ArrayList<String>();
 
         result.add(j2objcPath);
@@ -303,31 +322,25 @@ public class J2ObjCConverterMojo extends AbstractMojo {
 
         result.add(String.format(" -sourcepath %s", sourcePath));
         result.add(String.format(" -d %s", outputDirectory.getAbsolutePath()));
-        result.add(String.format(" -classpath %s", StringUtils.join(resolveClassPath().iterator(), ":")));
+        result.add(String.format(" -classpath %s", StringUtils.join(resolveClassPath(classPathDependencies).iterator(), ":")));
         result.add(String.format(" %s", StringUtils.join(file.iterator(), " ")));
 
         return StringUtils.join(result.iterator(), " ");
     }
 
-    private List<String> resolveClassPath() throws DependencyResolutionException {
+    private List<String> resolveClassPath(Collection<Artifact> classPathDependencies) throws DependencyResolutionException {
         List<String> classPath = new ArrayList<String>();
 
-        for (Artifact dependency: dependencies) {
-            classPath.add(dependency.getFile().getAbsolutePath());
+        for (Artifact dep: classPathDependencies) {
+            classPath.add(dep.getFile().getAbsolutePath());
         }
 
         return classPath;
     }
 
-    private void resolveDependencies() throws DependencyResolutionException {
-        dependencies = new Aether(mavenProject, session.getLocalRepository().getBasedir()).resolve(
-                new DefaultArtifact(
-                        mavenProject.getGroupId(),
-                        mavenProject.getArtifactId(),
-                        "",
-                        mavenProject.getPackaging(),
-                        mavenProject.getVersion()
-                ),
+    private Collection<Artifact> resolveDependencies(final Artifact artifact) throws DependencyResolutionException {
+        return new Aether(mavenProject, session.getLocalRepository().getBasedir()).resolve(
+                artifact,
                 JavaScopes.COMPILE
         );
     }
