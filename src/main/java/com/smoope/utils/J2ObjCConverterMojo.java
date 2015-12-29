@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.smoope.maven;
+package com.smoope.utils;
 
 import com.jcabi.aether.Aether;
 
