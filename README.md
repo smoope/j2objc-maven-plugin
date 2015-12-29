@@ -44,6 +44,10 @@ is path to J2ObjC's executable file. All the other plugin's parameters are proxi
         <j2objcPath>${J2OBJC_DISTRIBUTION}/j2objc</j2objcPath>
         <useArc>true</useArc>
         <noPackageDirectories>true</noPackageDirectories>
+        <!-- default value -->
+        <sourcePath>${project.basedir}/src/main/java</sourcePath>
+        <!-- default value -->
+        <d>${project.build.directory}/j2objc</d>
     </configuration>
 </plugin>
 ```
