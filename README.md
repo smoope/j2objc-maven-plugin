@@ -1,6 +1,8 @@
 Maven plugin for J2ObjC library
 ==========
 
+[![Build Status](https://travis-ci.org/smoope/j2objc-maven-plugin.svg?branch=master)](https://travis-ci.org/smoope/j2objc-maven-plugin)
+
 # Installation
 
 Add the following plugin entry into your pom's plugins section:
