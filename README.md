@@ -56,7 +56,7 @@ is path to J2ObjC's executable file. All the other plugin's parameters are proxi
 
 Full list of parameters you can find at [J2ObjC library home page](http://j2objc.org/docs/j2objc.html).
 
-The example below shows how you can externalize the path to J2ObjC library. Don't forget to add the parameter 
+The example above shows how you can externalize the path to J2ObjC library. Don't forget to add the parameter 
 definition to call: `mvn j2objc:convert -DJ2OBJC_DISTRIBUTION=/folder/of/j2obc`.
 
 Sometimes, the code you want to convert to Objective-C contains dependencies, which should be converted as well. 
