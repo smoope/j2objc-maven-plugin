@@ -16,8 +16,6 @@
 
 package com.smoope.utils;
 
-import com.jcabi.aether.Aether;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -25,13 +23,26 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.resolution.DependencyResolutionException;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transport.file.FileTransporterFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.transport.wagon.WagonTransporterFactory;
+import org.eclipse.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.util.filter.DependencyFilterUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,7 +52,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -228,7 +238,7 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         return Arrays.asList(list);
     }
 
-    private String buildCommand(final String sourcePath, final Collection<Artifact> classPathDependencies,
+    private String buildCommand(final String sourcePath, final List<Artifact> classPathDependencies,
                                 final List<String> file, final String output) throws DependencyResolutionException {
         List<String> result = new ArrayList<String>();
 
@@ -328,7 +338,7 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         return StringUtils.join(result.iterator(), " ");
     }
 
-    private List<String> resolveClassPath(Collection<Artifact> classPathDependencies) throws DependencyResolutionException {
+    private List<String> resolveClassPath(List<Artifact> classPathDependencies) throws DependencyResolutionException {
         List<String> classPath = new ArrayList<String>();
 
         for (Artifact dep: classPathDependencies) {
@@ -338,11 +348,21 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         return classPath;
     }
 
-    private Collection<Artifact> resolveDependencies(final Artifact artifact) throws DependencyResolutionException {
-        return new Aether(mavenProject, session.getLocalRepository().getBasedir()).resolve(
-                artifact,
-                JavaScopes.COMPILE
-        );
+    private List<Artifact> resolveDependencies(final Artifact artifact) throws DependencyResolutionException {
+        List<Artifact> result = new ArrayList<Artifact>();
+
+        RepositorySystem system = newRepositorySystem();
+        CollectRequest collectRequest = new CollectRequest();
+        collectRequest.setRoot(new org.eclipse.aether.graph.Dependency(artifact, JavaScopes.COMPILE));
+        List<ArtifactResult> dependenciesTree = system.resolveDependencies(
+                session,
+                new DependencyRequest(collectRequest, DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE))
+        ).getArtifactResults();
+        for (final ArtifactResult res : dependenciesTree) {
+            result.add(res.getArtifact());
+        }
+
+        return result;
     }
 
     private String extractJar(final String artifactId, final File file) throws IOException {
@@ -370,5 +390,15 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         }
 
         return output.getAbsolutePath();
+    }
+
+    public RepositorySystem newRepositorySystem() {
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+        locator.addService(TransporterFactory.class, WagonTransporterFactory.class);
+
+        return locator.getService(RepositorySystem.class);
     }
 }
