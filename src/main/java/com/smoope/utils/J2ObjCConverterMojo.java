@@ -159,6 +159,18 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     @Parameter(defaultValue = "objective-c")
     private String x;
 
+    @Parameter(defaultValue = "")
+    private String source;
+
+    @Parameter(defaultValue = "false")
+    private Boolean staticAccessorMethods;
+
+    @Parameter(defaultValue = "false")
+    private Boolean noJsniWarnings;
+
+    @Parameter
+    private List<String> flags;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             executeCommand(
@@ -323,6 +335,20 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         }
         if (StringUtils.isNotBlank(x)) {
             result.add(String.format("-x %s", x));
+        }
+        if (StringUtils.isNotBlank(source)) {
+            result.add(String.format("-source %s", source));
+        }
+        if (staticAccessorMethods) {
+            result.add("--static-accessor-methods");
+        }
+        if (noJsniWarnings) {
+            result.add("-Xno-jsni-warnings");
+        }
+        if (flags != null && !flags.isEmpty()) {
+            for (String f: flags) {
+                result.add(String.format("-J%s", f));
+            }
         }
 
         File outputDirectory = new File(d, output);

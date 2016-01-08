@@ -11,7 +11,7 @@ Add the following plugin entry into your pom's plugins section:
 <plugin>
     <groupId>com.smoope.utils</groupId>
     <artifactId>j2objc-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <configuration>
         <j2objcPath>path/to/j2objc</j2objcPath>
     </configuration>
@@ -32,6 +32,8 @@ Once you want to try a snapshot version, don't forget to add the following secti
 </pluginRepositories>
 ```
 
+_Please note, that plugin supports Maven versions >= 3.1.x._
+
 # Usage
 
 After you added the plugin to project, the only required parameter you have to specify is `j2objcPath`, which 
@@ -41,7 +43,7 @@ is path to J2ObjC's executable file. All the other plugin's parameters are proxi
 <plugin>
     <groupId>com.smoope.utils</groupId>
     <artifactId>j2objc-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <configuration>
         <j2objcPath>${J2OBJC_DISTRIBUTION}/j2objc</j2objcPath>
         <useArc>true</useArc>
@@ -66,7 +68,7 @@ In this case you have to add all those dependencies into appropriate configurati
 <plugin>
     <groupId>com.smoope.utils</groupId>
     <artifactId>j2objc-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <configuration>
         <j2objcPath>${J2OBJC_DISTRIBUTION}/j2objc</j2objcPath>
         <useArc>true</useArc>
@@ -95,7 +97,7 @@ your Xcode project, you have to specify it as well:
 <plugin>
     <groupId>com.smoope.utils</groupId>
     <artifactId>j2objc-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <configuration>
         <j2objcPath>${J2OBJC_DISTRIBUTION}/j2objc</j2objcPath>
         <useArc>true</useArc>
