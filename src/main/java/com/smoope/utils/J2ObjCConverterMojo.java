@@ -405,6 +405,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
             if (jarEntry.isDirectory()) {
                 f.mkdir();
             } else {
+                if (jarEntry.getName().contains(File.separator)) {
+                    f.getParentFile().mkdirs();
+                }
                 InputStream is = jarFile.getInputStream(jarEntry);
                 FileOutputStream fos = new FileOutputStream(f);
                 while (is.available() > 0) {

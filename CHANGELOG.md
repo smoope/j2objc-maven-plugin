@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## Version 1.1.1-SNAPSHOT
+
+_2016-01-08_
+
+ *  Fixed [#3](https://github.com/smoope/j2objc-maven-plugin/issues/3). 
+
 ## Version 1.1.0
 
 _2016-01-08_
