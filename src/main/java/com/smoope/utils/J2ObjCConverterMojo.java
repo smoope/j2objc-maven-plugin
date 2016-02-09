@@ -24,7 +24,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -51,7 +50,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -73,10 +71,10 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     private List<Dependency> dependencies;
 
     @Parameter(defaultValue = "${project.build.directory}/j2objc")
-    private String d;
+    private File d;
 
     @Parameter(defaultValue = "${project.basedir}/src/main/java")
-    private String sourcePath;
+    private File sourcePath;
 
     @Parameter(defaultValue = "UTF-8")
     private String encoding;
@@ -183,7 +181,7 @@ public class J2ObjCConverterMojo extends AbstractMojo {
                                     mavenProject.getPackaging(),
                                     mavenProject.getVersion()
                             )),
-                            getSourceFiles(),
+                            getSourceFiles(sourcePath, sourcePath),
                             ""
                     )
             );
@@ -196,15 +194,16 @@ public class J2ObjCConverterMojo extends AbstractMojo {
                             "jar",
                             dependency.getVersion()
                     );
-                    String path = extractJar(dependency.getArtifactId(),
+                    File path = extractJar(
+                            dependency.getArtifactId(),
                             new File(session.getLocalRepository().getBasedir(), session.getLocalRepositoryManager().getPathForLocalArtifact(artifact))
                     );
                     executeCommand(
                             buildCommand(
                                     path,
                                     resolveDependencies(artifact),
-                                    Arrays.asList(FileUtils.getFilesFromExtension(path, new String[]{"java"})),
-                                    dependency.getArtifactId()
+                                    getSourceFiles(path, path),
+                                    preserveFullPaths ? "" : dependency.getArtifactId()
                             )
                     );
                 }
@@ -239,18 +238,31 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         }
     }
 
-    private List<String> getSourceFiles() {
-        File sources = new File(sourcePath);
-
-        if (sources.isDirectory() == false){
+    private List<String> getSourceFiles(final File sourcesDirectory, final File parentDirectory) {
+        if (sourcesDirectory.isDirectory() == false){
             throw new RuntimeException(String.format("%s is not directory", sourcePath));
         }
 
-        String[] list = FileUtils.getFilesFromExtension(sourcePath, new String[] { "java" });
-        return Arrays.asList(list);
+        File[] list = sourcesDirectory.listFiles();
+        if (list == null) {
+            return new ArrayList<String>();
+        }
+        else {
+            List<String> files = new ArrayList<String>();
+
+            for (File file: list) {
+                if (file.isDirectory()) {
+                    files.addAll(getSourceFiles(file, parentDirectory));
+                } else if (file.getName().toLowerCase().endsWith("java")) {
+                    files.add(parentDirectory.toURI().relativize(file.toURI()).getPath());
+                }
+            }
+
+            return files;
+        }
     }
 
-    private String buildCommand(final String sourcePath, final List<Artifact> classPathDependencies,
+    private String buildCommand(final File sourcePath, final List<Artifact> classPathDependencies,
                                 final List<String> file, final String output) throws DependencyResolutionException {
         List<String> result = new ArrayList<String>();
 
@@ -356,7 +368,7 @@ public class J2ObjCConverterMojo extends AbstractMojo {
             outputDirectory.mkdir();
         }
 
-        result.add(String.format(" -sourcepath %s", sourcePath));
+        result.add(String.format(" -sourcepath %s", sourcePath.getAbsolutePath()));
         result.add(String.format(" -d %s", outputDirectory.getAbsolutePath()));
         result.add(String.format(" -classpath %s", StringUtils.join(resolveClassPath(classPathDependencies).iterator(), ":")));
         result.add(String.format(" %s", StringUtils.join(file.iterator(), " ")));
@@ -391,7 +403,7 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         return result;
     }
 
-    private String extractJar(final String artifactId, final File file) throws IOException {
+    private File extractJar(final String artifactId, final File file) throws IOException {
         File output = new File(mavenProject.getBuild().getOutputDirectory(), artifactId);
         if (!output.exists()) {
             output.mkdirs();
@@ -418,7 +430,7 @@ public class J2ObjCConverterMojo extends AbstractMojo {
             }
         }
 
-        return output.getAbsolutePath();
+        return output;
     }
 
     public RepositorySystem newRepositorySystem() {
