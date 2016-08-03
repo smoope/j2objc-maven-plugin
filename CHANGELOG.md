@@ -5,7 +5,7 @@ Change Log
 
 __2016-08-02_
 
- * Added `--swift-friendly` paramter
+ * Added `--swift-friendly` parameter
  
 ## Version 1.1.2
 
