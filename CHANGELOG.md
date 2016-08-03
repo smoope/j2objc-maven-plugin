@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-## Version 1.1.3
+## Version 1.1.3-SNAPSHOT
 
 __2016-08-02_
 
