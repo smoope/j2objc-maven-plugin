@@ -168,6 +168,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
 
     @Parameter
     private List<String> flags;
+    
+    @Parameter(defaultValue = "false")
+    private Boolean swiftFriendly;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -361,6 +364,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
             for (String f: flags) {
                 result.add(String.format("-J%s", f));
             }
+        }
+        if (swiftFriendly) {
+          result.add("--swift-friendly");
         }
 
         File outputDirectory = new File(d, output);

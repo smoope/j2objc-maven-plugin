@@ -5,7 +5,7 @@
 
     <groupId>com.smoope.utils</groupId>
     <artifactId>j2objc-maven-plugin</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Maven plugin for J2ObjC library</name>
     <description>In addition to standard J2ObjC conversion, this plugin supports dependencies conversion

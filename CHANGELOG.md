@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## Version 1.1.3
+
+__2016-08-02_
+
+ * Added `--swift-friendly` paramter
+ 
 ## Version 1.1.2
 
 _2016-02-09_
