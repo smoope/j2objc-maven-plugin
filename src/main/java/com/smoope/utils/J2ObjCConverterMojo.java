@@ -218,9 +218,10 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         }
     }
 
-    private void executeCommand(final String command) {
+    private void executeCommand(final String command) throws MojoFailureException, MojoExecutionException {
         getLog().info(String.format("Executing: %s", command));
 
+        boolean hasErrors = false;
         try {
             Process process = Runtime.getRuntime().exec(command);
             BufferedReader result = new BufferedReader(new
@@ -234,11 +235,14 @@ public class J2ObjCConverterMojo extends AbstractMojo {
             }
             while ((output = errors.readLine()) != null) {
                 getLog().error(output);
+                hasErrors = true;
             }
 
         }  catch (IOException e) {
             getLog().error(e);
+            throw new MojoExecutionException("j2objc failed with exception", e);            
         }
+        if(hasErrors) throw new MojoFailureException("j2objc translator had errors - check log");
     }
 
     private List<String> getSourceFiles(final File sourcesDirectory, final File parentDirectory) {
