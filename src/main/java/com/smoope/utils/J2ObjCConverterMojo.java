@@ -171,9 +171,20 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     
     @Parameter(defaultValue = "false")
     private Boolean swiftFriendly;
+    
+    @Parameter(defaultValue = "false")
+    private Boolean skipParent;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            if(this.mavenProject.getParent() == null){
+                getLog().debug("I have no parent project, probably I'm a parent.");
+                if(skipParent){
+                    getLog().info("skipping parent project!");
+                    return;
+                }
+            }
+
             executeCommand(
                     buildCommand(
                             sourcePath,

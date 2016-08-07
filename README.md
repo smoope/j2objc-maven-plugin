@@ -124,3 +124,9 @@ your Xcode project, you have to specify it as well:
 ```
 
 _Please note, that in order to make it work your local repository must contain the sources version of every dependency._
+
+## Advanced Options
+
+### Skip parent project
+
+The configuration `<skipParent>true</skipParent>` in parent pom can be used to only translate child projects.
