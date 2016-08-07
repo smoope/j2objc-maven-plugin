@@ -213,8 +213,10 @@ public class J2ObjCConverterMojo extends AbstractMojo {
             }
         } catch (DependencyResolutionException e) {
             getLog().error(e);
+            throw new MojoExecutionException("Build error - dependency resolution failed", e);
         } catch (IOException e) {
             getLog().error(e);
+            throw new MojoExecutionException("Build error - IO error", e);
         }
     }
 
