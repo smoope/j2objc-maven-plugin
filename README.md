@@ -2,6 +2,7 @@ Maven plugin for J2ObjC library
 ==========
 
 [![Build Status](https://travis-ci.org/smoope/j2objc-maven-plugin.svg?branch=master)](https://travis-ci.org/smoope/j2objc-maven-plugin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.smoope.utils/j2objc-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.smoope.utils/j2objc-maven-plugin/badge.svg)
 
 # Installation
 
@@ -30,6 +31,15 @@ Once you want to try a snapshot version, don't forget to add the following secti
         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </pluginRepository>
 </pluginRepositories>
+...
+<plugin>
+    <groupId>com.smoope.utils</groupId>
+    <artifactId>j2objc-maven-plugin</artifactId>
+    <version>1.1.3-SNAPSHOT</version>
+    <configuration>
+        <j2objcPath>path/to/j2objc</j2objcPath>
+    </configuration>
+</plugin>
 ```
 
 _Please note, that plugin supports Maven versions >= 3.1.x._
