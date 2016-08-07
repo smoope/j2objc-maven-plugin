@@ -3,6 +3,10 @@ Change Log
 
 ## Version 1.1.3-SNAPSHOT
 
+__2016-08-07_
+
+* Added `<skipParent>true</skipParent>` configuration option
+
 __2016-08-02_
 
  * Added `--swift-friendly` parameter
