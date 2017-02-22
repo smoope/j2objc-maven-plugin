@@ -140,3 +140,8 @@ _Please note, that in order to make it work your local repository must contain t
 ### Skip parent project
 
 The configuration `<skipParent>true</skipParent>` in parent pom can be used to only translate child projects.
+
+### Fail on errors
+
+By default the plugin will throw the exception in case of any error occured during the conversion.
+The configuration `<failOnErrors>false</skipParent>` prevents such behavior.

@@ -1,15 +1,13 @@
 Change Log
 ==========
 
-## Version 1.1.3-SNAPSHOT
+## Version 1.1.3
 
-__2016-08-07_
+__2017-02-22_
 
-* Added `<skipParent>true</skipParent>` configuration option
-
-__2016-08-02_
-
- * Added `--swift-friendly` parameter
+* Added `failOnErrors` configuration option
+* Added `skipParent` configuration option
+* Added `swiftFriendly` configuration option
  
 ## Version 1.1.2
 

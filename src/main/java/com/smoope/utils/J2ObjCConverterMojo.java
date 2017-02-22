@@ -175,6 +175,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     @Parameter(defaultValue = "false")
     private Boolean skipParent;
 
+    @Parameter(defaultValue = "true")
+    private Boolean failOnErrors;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             if(this.mavenProject.getParent() == null){
@@ -255,7 +258,10 @@ public class J2ObjCConverterMojo extends AbstractMojo {
             getLog().error(e);
             throw new MojoExecutionException("j2objc failed with exception", e);            
         }
-        if(hasErrors) throw new MojoFailureException("j2objc translator had errors - check log");
+
+        if (hasErrors && failOnErrors) {
+            throw new MojoFailureException("j2objc translator had errors - check log");
+        }
     }
 
     private List<String> getSourceFiles(final File sourcesDirectory, final File parentDirectory) {
