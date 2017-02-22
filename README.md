@@ -12,7 +12,7 @@ Add the following plugin entry into your pom's plugins section:
 <plugin>
     <groupId>com.smoope.utils</groupId>
     <artifactId>j2objc-maven-plugin</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <configuration>
         <j2objcPath>path/to/j2objc</j2objcPath>
     </configuration>
@@ -35,7 +35,7 @@ Once you want to try a snapshot version, don't forget to add the following secti
 <plugin>
     <groupId>com.smoope.utils</groupId>
     <artifactId>j2objc-maven-plugin</artifactId>
-    <version>1.1.3-SNAPSHOT</version>
+    <version>1.1.4-SNAPSHOT</version>
     <configuration>
         <j2objcPath>path/to/j2objc</j2objcPath>
     </configuration>
