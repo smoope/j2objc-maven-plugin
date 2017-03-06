@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## Version 1.1.4-SNAPSHOT
+
+__2017-03-06_
+
+* Added `nullability` configuration option
+
 ## Version 1.1.3
 
 __2017-02-22_
