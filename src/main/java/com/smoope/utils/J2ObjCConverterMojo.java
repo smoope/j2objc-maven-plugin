@@ -171,6 +171,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     
     @Parameter(defaultValue = "false")
     private Boolean swiftFriendly;
+
+    @Parameter(defaultValue = "false")
+    private Boolean nullability;
     
     @Parameter(defaultValue = "false")
     private Boolean skipParent;
@@ -390,6 +393,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
         }
         if (swiftFriendly) {
           result.add("--swift-friendly");
+        }
+        if (nullability) {
+            result.add("--nullability");
         }
 
         File outputDirectory = new File(d, output);
