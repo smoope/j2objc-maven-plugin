@@ -181,6 +181,9 @@ public class J2ObjCConverterMojo extends AbstractMojo {
     @Parameter(defaultValue = "true")
     private Boolean failOnErrors;
 
+    @Parameter(defaultValue = "false")
+    private Boolean dependenciesOnly;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             if(this.mavenProject.getParent() == null){
@@ -191,20 +194,22 @@ public class J2ObjCConverterMojo extends AbstractMojo {
                 }
             }
 
-            executeCommand(
+            if (!dependenciesOnly) {
+                executeCommand(
                     buildCommand(
-                            sourcePath,
-                            resolveDependencies(new DefaultArtifact(
-                                    mavenProject.getGroupId(),
-                                    mavenProject.getArtifactId(),
-                                    "",
-                                    mavenProject.getPackaging(),
-                                    mavenProject.getVersion()
-                            )),
-                            getSourceFiles(sourcePath, sourcePath),
-                            ""
+                        sourcePath,
+                        resolveDependencies(new DefaultArtifact(
+                            mavenProject.getGroupId(),
+                            mavenProject.getArtifactId(),
+                            "",
+                            mavenProject.getPackaging(),
+                            mavenProject.getVersion()
+                        )),
+                        getSourceFiles(sourcePath, sourcePath),
+                        ""
                     )
-            );
+                );
+            }
             if (dependencies != null && !dependencies.isEmpty()) {
                 for (Dependency dependency: dependencies) {
                     Artifact artifact = new DefaultArtifact(
