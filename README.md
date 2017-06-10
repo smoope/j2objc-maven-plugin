@@ -145,3 +145,7 @@ The configuration `<skipParent>true</skipParent>` in parent pom can be used to o
 
 By default the plugin will throw the exception in case of any error occured during the conversion.
 The configuration `<failOnErrors>false</skipParent>` prevents such behavior.
+
+### Translate dependencies only
+
+`<dependenciesOnly>true</dependenciesOnly>` configuration allows to translate dependencies only and ignore the parent project.

@@ -1,10 +1,11 @@
 Change Log
 ==========
 
-## Version 1.1.4-SNAPSHOT
+## Version 1.1.4
 
-__2017-03-06_
+__2017-06-06_
 
+* Added `dependenciesOnly` configuration option
 * Added `nullability` configuration option
 
 ## Version 1.1.3
